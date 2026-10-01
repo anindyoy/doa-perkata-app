@@ -54,7 +54,7 @@ class PengaturanResource extends ResourceDasar
                 ->required()
                 ->showWhen('kunci', '=', 'doa_acak_hanya_terverifikasi'),
             Text::make('Token API', 'nilai')
-                ->type('password')
+                ->customAttributes(['type' => 'password'])
                 ->showWhen('kunci', '=', 'terjemahan_perkata_api_token'),
             Text::make('Nilai', 'nilai')
                 ->showWhen('kunci', '!=', 'doa_acak_hanya_terverifikasi')
@@ -64,7 +64,7 @@ class PengaturanResource extends ResourceDasar
 
     public function aturan(DataWrapperContract $item): array
     {
-        if ($item->get('kunci') === 'doa_acak_hanya_terverifikasi') {
+        if (data_get($item->getOriginal(), 'kunci') === 'doa_acak_hanya_terverifikasi') {
             return ['nilai' => ['required', 'in:0,1']];
         }
 

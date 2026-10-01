@@ -21,9 +21,15 @@ abstract class ResourceDasar extends ModelResource
         return [IndexHalaman::class, FormHalaman::class, DetailHalaman::class];
     }
 
-    abstract public function indexFields(): iterable;
+    public function indexFields(): iterable
+    {
+        return [];
+    }
 
-    abstract public function formFields(): iterable;
+    public function formFields(): iterable
+    {
+        return [];
+    }
 
     public function detailFields(): iterable
     {

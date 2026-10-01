@@ -15,7 +15,16 @@
     <source>
         <include>
             <directory>app</directory>
+            <directory>bootstrap</directory>
+            <directory>config</directory>
+            <directory>database</directory>
+            <directory>public</directory>
+            <directory>routes</directory>
         </include>
+        <exclude>
+            <directory>bootstrap/cache</directory>
+            <file>public/index.php</file>
+        </exclude>
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
