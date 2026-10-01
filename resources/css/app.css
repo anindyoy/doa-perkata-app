@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+@plugin "flowbite/plugin";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../../node_modules/flowbite/**/*.js';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Newsreader', ui-serif, Georgia, serif;
+    --font-arab: 'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', serif;
+
+    --color-tinta: #0f3d3e;
+    --color-tinta-muda: #1d6063;
+    --color-safron: #c98a1b;
+    --color-kertas: #f2f5f2;
+    --color-malam: #0b1516;
+    --color-malam-2: #122123;
+    --color-malam-3: #1b3032;
+}
+
+[x-cloak] { display: none !important; }
+
+body {
+    @apply bg-kertas text-tinta antialiased dark:bg-malam dark:text-slate-200;
+}
+
+.teks-arab {
+    font-family: var(--font-arab);
+    direction: rtl;
+    text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}
