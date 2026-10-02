@@ -61,6 +61,7 @@ class ProjectSourceCoverageTest extends TestCase
 
             $this->assertTrue(Schema::connection('coverage_sqlite')->hasTable('pengguna'));
             $this->assertTrue(Schema::connection('coverage_sqlite')->hasTable('doa'));
+            $this->assertTrue(Schema::connection('coverage_sqlite')->hasTable('notifications'));
             $this->assertDatabaseHas('pengaturan', [
                 'kunci' => 'terjemahan_perkata_model',
                 'nilai' => 'gpt-4o-mini',
@@ -73,6 +74,7 @@ class ProjectSourceCoverageTest extends TestCase
 
             $this->assertFalse(Schema::connection('coverage_sqlite')->hasTable('pengguna'));
             $this->assertFalse(Schema::connection('coverage_sqlite')->hasTable('doa'));
+            $this->assertFalse(Schema::connection('coverage_sqlite')->hasTable('notifications'));
         } finally {
             DB::purge('coverage_sqlite');
             Config::set('database.default', $defaultConnection);
