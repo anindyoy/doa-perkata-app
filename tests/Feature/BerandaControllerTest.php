@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Doa;
+use App\Models\KataDoa;
 use App\Models\Kategori;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -44,6 +45,27 @@ class BerandaControllerTest extends TestCase
         $this->assertStringContainsString('cari=alhamdulillah', $response->viewData('doa')->url(2));
     }
 
+    public function test_it_hides_prayers_without_word_meanings(): void
+    {
+        $kategori = Kategori::create(['nama' => 'Harian', 'slug' => 'harian', 'urutan' => 1]);
+        $doaKosong = Doa::create([
+            'kategori_id' => $kategori->id,
+            'judul' => 'Doa tanpa kata',
+            'slug' => 'doa-tanpa-kata',
+            'teks_arab' => 'نَصٌّ',
+            'transliterasi' => 'nasshun',
+            'terjemahan' => 'Teks',
+            'urutan' => 1,
+        ]);
+        $doaBerisi = $this->buatDoa('doa-berisi-kata', $kategori, 2);
+
+        $response = $this->get(route('beranda'));
+
+        $response->assertOk();
+        $this->assertSame([$doaBerisi->id], $response->viewData('doa')->pluck('id')->all());
+        $this->assertNotContains($doaKosong->id, $response->viewData('doa')->pluck('id')->all());
+    }
+
     private function buatDoa(
         string $slug,
         Kategori $kategori,
@@ -51,7 +73,7 @@ class BerandaControllerTest extends TestCase
         string $judul = 'Judul doa',
         string $transliterasi = 'transliterasi'
     ): Doa {
-        return Doa::create([
+        $doa = Doa::create([
             'kategori_id' => $kategori->id,
             'judul' => $judul,
             'slug' => $slug,
@@ -60,5 +82,15 @@ class BerandaControllerTest extends TestCase
             'terjemahan' => 'Teks',
             'urutan' => $urutan,
         ]);
+
+        KataDoa::create([
+            'doa_id' => $doa->id,
+            'kata_arab' => 'نَصٌّ',
+            'arti_kata' => 'teks',
+            'urutan' => 1,
+            'status' => 'terverifikasi',
+        ]);
+
+        return $doa;
     }
 }

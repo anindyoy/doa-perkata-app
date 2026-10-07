@@ -14,6 +14,7 @@ class BerandaController extends Controller
         $slugKategori = trim((string) $request->query('kategori', ''));
 
         $doa = Doa::with('kategori')
+            ->adaArtiPerKata()
             ->when($cari !== '', function ($q) use ($cari) {
                 $q->where(function ($q) use ($cari) {
                     $q->where('judul', 'like', "%{$cari}%")

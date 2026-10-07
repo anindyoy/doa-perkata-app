@@ -40,4 +40,10 @@ class Doa extends Model
         return $query->whereHas('kataDoa')
             ->whereDoesntHave('kataDoa', fn ($q) => $q->where('status', '!=', 'terverifikasi'));
     }
+
+    /** Punya minimal satu arti per kata (tanpa memandang status verifikasi). */
+    public function scopeAdaArtiPerKata($query)
+    {
+        return $query->whereHas('kataDoa');
+    }
 }

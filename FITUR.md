@@ -40,6 +40,7 @@ Tidak ada role editor terpisah. Tidak ada pendaftaran admin dari halaman publik.
 
 - Rute [`beranda`](routes/web.php:9) ke [`BerandaController::index()`](app/Http/Controllers/BerandaController.php:11).
 - Tampilan [`beranda.blade.php`](resources/views/beranda.blade.php) dengan kartu [`kartu-doa.blade.php`](resources/views/components/kartu-doa.blade.php).
+- Hanya doa yang punya minimal satu arti per kata yang ditampilkan, via scope [`Doa::scopeAdaArtiPerKata()`](app/Models/Doa.php:45). Doa tanpa relasi [`Doa::kataDoa()`](app/Models/Doa.php:27) disembunyikan dari daftar, pencarian, dan filter kategori.
 - Cari judul, teks Arab, atau transliterasi lewat param cari. Contoh: beranda dengan cari bangun tidur.
 - Filter kategori lewat param kategori berisi slug. Tombol Semua plus satu tombol per kategori dari model [`Kategori.php`](app/Models/Kategori.php).
 - Urut berdasar kolom urutan lalu id. Paginasi 12 per halaman dengan query string dipertahankan.
