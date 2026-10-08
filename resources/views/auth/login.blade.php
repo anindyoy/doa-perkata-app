@@ -4,8 +4,16 @@
 @section('isi')
 <div class="mx-auto max-w-md">
     <h1 class="font-serif text-4xl font-semibold">Masuk</h1>
+
+    @if (request('pesan') === 'simpan')
+        <div class="mt-2 rounded-lg bg-safron/10 p-3 text-sm text-safron">
+            Silahkan masuk untuk menyimpan doa
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('login') }}" class="mt-6 space-y-4">
         @csrf
+        <input type="hidden" name="kembali" value="{{ request('kembali') }}">
         <div>
             <label for="email" class="mb-1 block text-sm font-medium">Email</label>
             <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" class="block w-full rounded-lg border border-tinta/20 bg-white px-3 py-2.5 text-sm focus:border-safron focus:ring-safron dark:border-white/15 dark:bg-malam-2">

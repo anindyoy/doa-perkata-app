@@ -27,8 +27,8 @@
                     </form>
                 @endif
             @else
-                <a href="{{ route('login', ['kembali' => '/'.request()->path()]) }}" class="inline-flex items-center gap-2 rounded-lg border border-tinta/25 px-4 py-2 text-sm font-medium hover:border-safron dark:border-white/20">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linejoin="round" d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"/></svg> Masuk untuk menyimpan
+                <a href="{{ route('login', ['kembali' => '/'.request()->path(), 'pesan' => 'simpan']) }}" class="inline-flex items-center gap-2 rounded-lg border border-tinta/25 px-4 py-2 text-sm font-medium hover:border-safron dark:border-white/20">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linejoin="round" d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"/></svg> Simpan
                 </a>
             @endauth
 
