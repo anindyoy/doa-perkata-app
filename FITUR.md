@@ -152,12 +152,9 @@ Panel didaftarkan di [`MoonShineServiceProvider.php`](app/Providers/MoonShineSer
 
 ### 12. Kelola Pengaturan
 
-- Resource [`PengaturanResource.php`](app/MoonShine/Resources/PengaturanResource.php).
-- Mode khusus: hanya aksi UPDATE, tanpa tambah dan hapus karena baris dibuat lewat migrasi. Kunci readonly.
-- Field dinamis berdasar kunci:
-  - Kunci doa_acak_hanya_terverifikasi tampil sebagai select Aktif Nonaktif nilai 1 atau 0, dibaca oleh [`Pengaturan::aktif()`](app/Models/Pengaturan.php:24).
-  - Kunci terjemahan_perkata_api_token tampil sebagai input password, nilainya disamarkan menjadi bintang lewat accessor nilai_tampil di [`Pengaturan.php`](app/Models/Pengaturan.php:31).
-  - Kunci lain tampil sebagai teks biasa seperti terjemahan_perkata_api_url, terjemahan_perkata_model, terjemahan_perkata_max_tokens.
+- Halaman form tunggal [`PengaturanHalaman.php`](app/MoonShine/Pages/PengaturanHalaman.php), bukan tabel.
+- Satu layar berisi semua pengaturan: box Doa Acak (select Aktif Nonaktif untuk doa_acak_hanya_terverifikasi, dibaca oleh [`Pengaturan::aktif()`](app/Models/Pengaturan.php:24)) dan box Terjemahan Per Kata berisi URL API, token (input password dengan eye), model, max tokens.
+- Tombol Simpan Pengaturan menyimpan semua nilai sekaligus via [`PengaturanHalaman::simpanNilai()`](app/MoonShine/Pages/PengaturanHalaman.php:68) dengan validasi di [`PengaturanHalaman::aturanSimpan()`](app/MoonShine/Pages/PengaturanHalaman.php:42); baris dibuat otomatis bila belum ada, input kosong disimpan sebagai null.
 - Helper [`Pengaturan::get()`](app/Models/Pengaturan.php:17) dipakai CLI untuk URL, model, token, max tokens.
 - Hanya Administrator.
 

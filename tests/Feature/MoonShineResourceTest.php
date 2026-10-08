@@ -2,13 +2,14 @@
 
 use App\Models\Doa;
 use App\Models\Kategori;
+use App\Models\Pengaturan;
 use App\MoonShine\Pages\DetailHalaman;
 use App\MoonShine\Pages\FormHalaman;
 use App\MoonShine\Pages\IndexHalaman;
+use App\MoonShine\Pages\PengaturanHalaman;
 use App\MoonShine\Resources\DoaResource;
 use App\MoonShine\Resources\KataDoaResource;
 use App\MoonShine\Resources\KategoriResource;
-use App\MoonShine\Resources\PengaturanResource;
 use App\MoonShine\Resources\PenggunaResource;
 use App\MoonShine\Resources\ResourceDasar;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +28,6 @@ function buatSemuaResource(): array
         new DoaResource($core),
         new KataDoaResource($core),
         new KategoriResource($core),
-        new PengaturanResource($core),
         new PenggunaResource($core),
     ];
     $core->resources($resources, newCollection: true);
@@ -61,14 +61,37 @@ it('menolak slug route acak pada validasi resource doa', function () {
     expect($rules['judul'][0])->toBe('required');
 });
 
-it('menerapkan aturan validasi berbeda untuk pengaturan', function () {
-    $resource = app()->make(PengaturanResource::class);
+it('menerapkan aturan validasi form untuk pengaturan', function () {
+    $aturan = PengaturanHalaman::aturanSimpan();
 
-    $toggleRules = $resource->aturan(new MixedDataWrapper(['kunci' => 'doa_acak_hanya_terverifikasi']));
-    $textRules = $resource->aturan(new MixedDataWrapper(['kunci' => 'terjemahan_perkata_api_token']));
+    expect($aturan['doa_acak_hanya_terverifikasi'])->toBe(['required', 'in:0,1']);
+    expect($aturan['terjemahan_perkata_api_token'])->toBe(['nullable', 'string', 'max:4096']);
+    expect($aturan['terjemahan_perkata_max_tokens'])->toContain('integer');
+});
 
-    expect($toggleRules['nilai'])->toBe(['required', 'in:0,1']);
-    expect($textRules['nilai'])->toBe(['nullable', 'string']);
+it('membaca nilai awal dan menyimpan pengaturan lewat halaman form', function () {
+    Pengaturan::query()->updateOrCreate(['kunci' => 'doa_acak_hanya_terverifikasi'], ['nilai' => '0']);
+
+    $awal = PengaturanHalaman::nilaiAwal();
+
+    expect($awal['doa_acak_hanya_terverifikasi'])->toBe('0');
+    expect($awal)->toHaveKeys([
+        'doa_acak_hanya_terverifikasi',
+        'terjemahan_perkata_api_url',
+        'terjemahan_perkata_api_token',
+        'terjemahan_perkata_model',
+        'terjemahan_perkata_max_tokens',
+    ]);
+
+    PengaturanHalaman::simpanNilai([
+        'doa_acak_hanya_terverifikasi' => '1',
+        'terjemahan_perkata_model' => 'model-baru',
+        'terjemahan_perkata_api_token' => '',
+    ]);
+
+    expect(Pengaturan::get('doa_acak_hanya_terverifikasi'))->toBe('1');
+    expect(Pengaturan::get('terjemahan_perkata_model'))->toBe('model-baru');
+    expect(Pengaturan::where('kunci', 'terjemahan_perkata_api_token')->value('nilai'))->toBeNull();
 });
 
 it('mewajibkan nama kategori dan slug unik', function () {
@@ -121,7 +144,6 @@ it('mengekspos field cari filter dan aksi read-only', function () {
     $doa = app()->make(DoaResource::class);
     $kataDoa = app()->make(KataDoaResource::class);
     $kategori = app()->make(KategoriResource::class);
-    $pengaturan = app()->make(PengaturanResource::class);
     $pengguna = app()->make(PenggunaResource::class);
 
     expect(panggilProtectedResource($doa, 'search'))->toBe(['judul', 'teks_arab', 'transliterasi']);
@@ -129,7 +151,6 @@ it('mengekspos field cari filter dan aksi read-only', function () {
     expect(panggilProtectedResource($kataDoa, 'filters'))->not->toBeEmpty();
     expect(panggilProtectedResource($kategori, 'search'))->toBe(['nama', 'slug']);
     expect(panggilProtectedResource($pengguna, 'search'))->toBe(['nama', 'email']);
-    expect(panggilProtectedResource($pengaturan, 'activeActions')->toArray())->toBe([Action::UPDATE]);
     expect(panggilProtectedResource($pengguna, 'activeActions')->toArray())->toBe([Action::VIEW]);
 });
 

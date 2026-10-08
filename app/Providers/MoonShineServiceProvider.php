@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\MoonShine\Layouts\AdminLayout;
+use App\MoonShine\Pages\PengaturanHalaman;
 use App\MoonShine\Resources\DoaResource;
 use App\MoonShine\Resources\KataDoaResource;
 use App\MoonShine\Resources\KategoriResource;
-use App\MoonShine\Resources\PengaturanResource;
 use App\MoonShine\Resources\PenggunaResource;
 use Illuminate\Support\ServiceProvider;
 use MoonShine\Contracts\Core\DependencyInjection\CoreContract;
@@ -26,10 +26,9 @@ class MoonShineServiceProvider extends ServiceProvider
                 DoaResource::class,
                 KataDoaResource::class,
                 KategoriResource::class,
-                PengaturanResource::class,
                 PenggunaResource::class,
             ])
-            ->pages([...$core->getConfig()->getPages()])
+            ->pages([...$core->getConfig()->getPages(), PengaturanHalaman::class])
             ->getConfig()
             ->layout(AdminLayout::class);
     }
