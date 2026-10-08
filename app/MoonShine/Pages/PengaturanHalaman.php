@@ -14,6 +14,8 @@ use MoonShine\Support\Attributes\Icon;
 use MoonShine\Support\Enums\ToastType;
 use MoonShine\UI\Components\FormBuilder;
 use MoonShine\UI\Components\Layout\Box;
+use MoonShine\UI\Components\Layout\Column;
+use MoonShine\UI\Components\Layout\Grid;
 use MoonShine\UI\Fields\Number;
 use MoonShine\UI\Fields\Select;
 use MoonShine\UI\Fields\Text;
@@ -114,21 +116,35 @@ class PengaturanHalaman extends Page
             ->name('pengaturan-form')
             ->fields([
                 Box::make('Doa Acak', [
-                    Select::make('Hanya ambil doa yang sudah terverifikasi', 'doa_acak_hanya_terverifikasi')
-                        ->options(['1' => 'Aktif', '0' => 'Nonaktif'])
-                        ->required()
-                        ->hint('Bila aktif, menu Doa Acak hanya memilih doa yang seluruh katanya terverifikasi.'),
+                    Grid::make([
+                        Column::make([
+                            Select::make('Hanya ambil doa yang sudah terverifikasi', 'doa_acak_hanya_terverifikasi')
+                                ->options(['1' => 'Aktif', '0' => 'Nonaktif'])
+                                ->required()
+                                ->hint('Bila aktif, menu Doa Acak hanya memilih doa yang seluruh katanya terverifikasi.'),
+                        ], 6),
+                    ]),
                 ]),
                 Box::make('Terjemahan Per Kata (AI)', [
-                    Text::make('URL API', 'terjemahan_perkata_api_url')
-                        ->hint('Contoh: https://api.openai.com/v1/chat/completions'),
-                    Text::make('Token API', 'terjemahan_perkata_api_token')
-                        ->customAttributes(['type' => 'password'])
-                        ->eye(),
-                    Text::make('Model', 'terjemahan_perkata_model')
-                        ->hint('Contoh: gpt-4o-mini'),
-                    Number::make('Max Tokens', 'terjemahan_perkata_max_tokens')
-                        ->min(1),
+                    Grid::make([
+                        Column::make([
+                            Text::make('URL API', 'terjemahan_perkata_api_url')
+                                ->hint('Contoh: https://api.openai.com/v1/chat/completions'),
+                        ], 6),
+                        Column::make([
+                            Text::make('Token API', 'terjemahan_perkata_api_token')
+                                ->customAttributes(['type' => 'password'])
+                                ->eye(),
+                        ], 6),
+                        Column::make([
+                            Text::make('Model', 'terjemahan_perkata_model')
+                                ->hint('Contoh: gpt-4o-mini'),
+                        ], 6),
+                        Column::make([
+                            Number::make('Max Tokens', 'terjemahan_perkata_max_tokens')
+                                ->min(1),
+                        ], 6),
+                    ]),
                 ]),
             ])
             ->fill(self::nilaiAwal())
