@@ -22,10 +22,10 @@ Pastikan setiap file PHP first-party memiliki tes Pest yang membuktikan perilaku
 1. Baca instruksi repo dan tes di area terkait. Periksa versi Pest yang dipasang serta konfigurasi tes sebelum menentukan sintaks atau perintah.
 2. Buat inventaris lengkap file PHP first-party sesuai cakupan di atas pada setiap pekerjaan PHP. Periksa pasangan tes untuk setiap file dalam inventaris, bukan hanya file yang diubah, lalu tambahkan tes untuk celah cakupan.
 3. Pilih tes berdasarkan perilaku yang dapat diamati: request untuk controller dan route, perilaku domain untuk model atau service, skema/hasil untuk migration, serta hasil yang relevan untuk factory, seeder, konfigurasi, dan command. Tes integrasi boleh mencakup beberapa file yang bekerja sebagai satu alur.
-4. Tulis atau perbarui tes menggunakan Pest. Utamakan gaya Pest (`it()`/`test()` dan `expect()`) untuk tes baru, kecuali tes terdekat atau konfigurasi repo menetapkan pola lain. Tes PHPUnit-style yang sudah ada dapat tetap dijalankan melalui Pest; jangan mengubahnya tanpa kebutuhan.
+4. Tulis atau perbarui tes menggunakan gaya Pest (`it()`/`test()` dan `expect()`). Suite ini 100% Pest; jangan buat file PHPUnit-style baru karena mode `--tia` menolaknya.
 5. Tes harus gagal bila perilaku yang dimaksud rusak. Hindari tes tautologis seperti hanya memeriksa file ada, class dapat dimuat, atau menyalin implementasi ke assertion.
 6. Jalankan tes Pest paling sempit yang mencakup perubahan, dengan nama file atau `--filter`. Jangan jalankan seluruh suite lokal kecuali diminta secara eksplisit.
-7. Pilih opsi parallel sesuai versi Pest: Pest v5 atau lebih baru gunakan `--tia`; Pest di bawah v5 gunakan `--parallel`. Contoh untuk Pest di bawah v5: `vendor/bin/pest --parallel tests/Feature/SomeTest.php --filter='nama test'`.
+7. Wajib jalankan Pest dengan flag `--parallel` atau `--tia` (proyek ini memakai Pest v5 + ParaTest, lihat `.ai/rules/pest.md`). Full suite: `vendor/bin/pest --parallel`. Iterasi cepat: `vendor/bin/pest --tia`. Gabungan tercepat: `vendor/bin/pest --parallel --tia`. Terfokus namun tetap paralel: `vendor/bin/pest --parallel tests/Feature/SomeTest.php --filter='nama test'`. Jangan menjalankan test tanpa salah satu flag tersebut.
 8. Jika kode PHP produksi berubah, jalankan formatter PHP yang diwajibkan repo. Laporkan file PHP yang dicakup, pasangan tesnya, perintah validasi, dan kegagalan atau batasan yang tersisa.
 
 ## Kriteria Selesai

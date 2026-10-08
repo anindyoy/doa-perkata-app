@@ -3,9 +3,8 @@
 use App\Models\Doa;
 use App\Models\KataDoa;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-uses(TestCase::class, RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 function buatDoaUntukCakupan(string $slug): Doa
 {

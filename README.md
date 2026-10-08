@@ -65,7 +65,11 @@ php artisan import:dua-dhikr daily-dua --path=/path/ke/dua-dhikr
 
 ## Membuat Arti Per Kata
 
-Perintah berikut meminta API AI untuk menghasilkan draf arti per kata bagi satu doa:
+Atur URL API, nama model, dan token opsional pada menu Pengaturan di panel admin sebelum generate. Hasil dari AI berstatus `diterjemahkan_ai`; periksa dan verifikasi hasilnya sebelum dianggap final.
+
+Cara 1 — dari panel admin (tanpa terminal): buka menu Doa, tekan tombol Generate arti di tiap baris daftar, atau buka halaman edit doa lalu tekan Generate arti per kata di atas form. Tombol meminta konfirmasi dulu karena kata yang sudah ada (termasuk yang terverifikasi) akan dihapus dan dibuat ulang oleh AI.
+
+Cara 2 — dari terminal, untuk satu doa:
 
 ```bash
 php artisan generate:kata-doa ID_DOA
@@ -77,12 +81,26 @@ Untuk semua doa yang belum memiliki arti per kata:
 php artisan generate:kata-doa --semua
 ```
 
-Atur URL API, nama model, dan token opsional pada menu Pengaturan di panel admin sebelum menjalankan perintah. Hasil dari AI berstatus `diterjemahkan_ai`; periksa dan verifikasi hasilnya sebelum dianggap final. Opsi `--ulang` membuat ulang semua kata untuk doa yang diproses, termasuk menghapus entri yang sudah terverifikasi.
+Opsi `--ulang` membuat ulang semua kata untuk doa yang diproses, termasuk menghapus entri yang sudah terverifikasi.
 
 ## Pengujian
 
-Jalankan pengujian aplikasi dengan:
+Proyek ini memakai Pest 5 (lihat [`.ai/rules/pest.md`](.ai/rules/pest.md:1)). Selalu jalankan test dengan flag `--parallel` atau `--tia`:
 
 ```bash
-php artisan test
+vendor/bin/pest --parallel
 ```
+
+Untuk iterasi cepat (hanya test yang terdampak perubahan):
+
+```bash
+vendor/bin/pest --tia
+```
+
+Test terfokus namun tetap paralel:
+
+```bash
+vendor/bin/pest --parallel tests/Feature/NamaTest.php --filter='nama test'
+```
+
+Seluruh suite sudah gaya Pest murni, sehingga `--parallel`, `--tia`, maupun gabungan `--parallel --tia` semuanya berjalan. Jangan menjalankan test tanpa salah satu flag tersebut, dan jangan menambah file PHPUnit-style baru.

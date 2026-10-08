@@ -121,11 +121,13 @@ Panel didaftarkan di [`MoonShineServiceProvider.php`](app/Providers/MoonShineSer
 ### 9. Kelola Doa
 
 - Resource [`DoaResource.php`](app/MoonShine/Resources/DoaResource.php).
-- Index: ID, judul sortable, kategori relasi, urutan sortable. Pencarian di [`DoaResource::search()`](app/MoonShine/Resources/DoaResource.php:102) mencakup judul, teks_arab, transliterasi. Sort default urutan menaik.
+- Index: ID, judul sortable, kategori relasi, urutan sortable. Pencarian di [`DoaResource::search()`](app/MoonShine/Resources/DoaResource.php:113) mencakup judul, teks_arab, transliterasi. Sort default urutan menaik.
 - Form:
   - Box utama: judul wajib, slug auto dari judul wajib dan unik kecuali kata acak yang dilarang, kategori opsional, urutan default 0, teks Arab wajib, transliterasi opsional, terjemahan wajib, catatan, referensi sumber.
   - Box Arti per Kata: repeater relasi kataDoa ke [`KataDoaResource.php`](app/MoonShine/Resources/KataDoaResource.php) dengan field urutan, kata Arab wajib, transliterasi, arti wajib, status pilihan diterjemahkan_ai default atau terverifikasi dengan badge kuning hijau. Bisa tambah dan hapus.
-- Validasi di [`DoaResource::aturan()`](app/MoonShine/Resources/DoaResource.php:87): judul, slug unik, kategori_id harus ada, teks_arab, terjemahan, urutan integer min 0.
+- Validasi di [`DoaResource::aturan()`](app/MoonShine/Resources/DoaResource.php:98): judul, slug unik, kategori_id harus ada, teks_arab, terjemahan, urutan integer min 0.
+- Tombol Generate arti per kata (index per baris dan form edit) via [`DoaResource::generateKata()`](app/MoonShine/Resources/DoaResource.php:178): async POST dengan konfirmasi, memakai model & URL AI dari Pengaturan lewat service [`GeneratorKataDoa.php`](app/Services/GeneratorKataDoa.php:10). Menulis ulang semua kata (termasuk yang terverifikasi) jadi draf `diterjemahkan_ai`. Index me-refresh tabel via event list; form me-redirect kembali ke halaman edit agar repeater tampil baru. Hanya tampil saat edit (punya ID) dan untuk yang boleh update.
+- Halaman khusus [`DoaIndexHalaman.php`](app/MoonShine/Pages/DoaIndexHalaman.php) dan [`DoaFormHalaman.php`](app/MoonShine/Pages/DoaFormHalaman.php) menambah tombol di atas tombol bawaan.
 - Hanya Administrator. Pengguna publik tidak bisa tambah, ubah, hapus doa.
 
 ### 10. Kelola Kategori
@@ -181,15 +183,17 @@ Panel didaftarkan di [`MoonShineServiceProvider.php`](app/Providers/MoonShineSer
 
 ### 15. Generate Arti Per Kata via AI
 
-- Command [`GenerateKataDoa.php`](app/Console/Commands/GenerateKataDoa.php:13) dengan argumen doa_id dan opsi semua serta ulang.
+- Service terpusat [`GeneratorKataDoa.php`](app/Services/GeneratorKataDoa.php:10): cek kesiapan via `siap()`, panggil AI via `mintaAi()`, simpan via `generate()` dalam transaksi (hapus semua kata lama lalu simpan urutan mulai 1 dengan status `diterjemahkan_ai`). Dipakai CLI dan tombol admin agar perilaku sama.
+- Command [`GenerateKataDoa.php`](app/Console/Commands/GenerateKataDoa.php:9) dengan argumen doa_id dan opsi semua serta ulang.
 - Prasyarat pengaturan URL API dan model di menu Pengaturan, token opsional, max tokens default 8000.
-- Alur di [`GenerateKataDoa::handle()`](app/Console/Commands/GenerateKataDoa.php:32):
+- Alur di [`GenerateKataDoa::handle()`](app/Console/Commands/GenerateKataDoa.php:18):
   - Satu doa bila diberi id, semua doa tanpa kata bila opsi semua, tolak bila tanpa argumen.
-  - Lewati bila sudah punya kata kecuali opsi ulang yang menghapus semua kata termasuk terverifikasi dalam transaksi.
-  - Minta AI via [`GenerateKataDoa::mintaAi()`](app/Console/Commands/GenerateKataDoa.php:96) dengan system prompt pecah kata Arab berharakat plus transliterasi dan arti konteks, balas JSON array saja, timeout 180 detik, validasi tiap item wajib kata_arab dan arti_kata.
+  - Lewati bila sudah punya kata kecuali opsi ulang yang menghapus semua kata termasuk terverifikasi.
+  - Minta AI via [`GeneratorKataDoa::mintaAi()`](app/Services/GeneratorKataDoa.php:74) dengan system prompt pecah kata Arab berharakat plus transliterasi dan arti konteks, balas JSON array saja, timeout 180 detik, validasi tiap item wajib kata_arab dan arti_kata.
   - Simpan dengan urutan mulai 1 dan status diterjemahkan_ai.
+- Tombol admin (alternatif tanpa terminal): daftar doa tiap baris dan form edit doa, memanggil service yang sama. Minta konfirmasi dulu karena menimpa kata terverifikasi. Uji di [`GenerateKataDoaAdminTest.php`](tests/Feature/GenerateKataDoaAdminTest.php:11).
 - Hasil selalu draf, wajib diverifikasi admin di panel sebelum dianggap final.
-- Peran Operator CLI dengan konfigurasi milik Administrator.
+- Peran Operator CLI dan Administrator dengan konfigurasi milik Administrator.
 
 ## Alur Data dan Status Verifikasi
 
