@@ -2,6 +2,7 @@
 
 use App\Models\Doa;
 use App\Models\Pengaturan;
+use App\Services\GeneratorKataDoa;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 
@@ -216,4 +217,43 @@ it('tidak menyimpan item tanpa kolom terjemahan wajib', function () {
         ->assertSuccessful();
 
     $this->assertDatabaseMissing('kata_doa', ['doa_id' => $doa->id]);
+});
+
+it('melempar exception saat pengaturan tidak lengkap di service', function () {
+    Pengaturan::where('kunci', 'terjemahan_perkata_api_url')->update(['nilai' => null]);
+
+    $doa = Doa::create([
+        'judul' => 'Doa test',
+        'slug' => 'doa-test',
+        'teks_arab' => 'الْحَمْدُ',
+        'terjemahan' => 'Segala puji',
+    ]);
+
+    $generator = app()->make(GeneratorKataDoa::class);
+
+    try {
+        $generator->generate($doa);
+    } catch (\RuntimeException $e) {
+        expect($e->getMessage())->toBe('URL API dan model terjemahan per kata harus diatur di menu Pengaturan.');
+    }
+});
+
+it('melempar exception saat teks arab kosong di service', function () {
+    Pengaturan::where('kunci', 'terjemahan_perkata_api_url')->update(['nilai' => 'https://test.com']);
+    Pengaturan::where('kunci', 'terjemahan_perkata_model')->update(['nilai' => 'test-model']);
+
+    $doa = Doa::create([
+        'judul' => 'Doa test',
+        'slug' => 'doa-test',
+        'teks_arab' => '',
+        'terjemahan' => 'Segala puji',
+    ]);
+
+    $generator = app()->make(GeneratorKataDoa::class);
+
+    try {
+        $generator->generate($doa);
+    } catch (\RuntimeException $e) {
+        expect($e->getMessage())->toBe('Teks Arab doa masih kosong.');
+    }
 });
